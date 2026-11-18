@@ -1,0 +1,47 @@
+{
+  "params": {
+    "waveform": "triangle",
+    "attack": 0.005,
+    "decay": 0.15,
+    "sustain": 0.7,
+    "release": 0.25,
+    "cutoff": 2500.0,
+    "resonance": 0.707,
+    "gain": 0.8,
+    "smooth_time": 0.02,
+    "voices": 8
+  },
+  "sample_rate": 48000.0,
+  "block_size": 256,
+  "render": {
+    "render_seconds": 0.626,
+    "audio_seconds": 2.45,
+    "realtime_factor": 0.2555,
+    "samples": 117600,
+    "peak": 0.987311753570624
+  },
+  "checks": {
+    "pitch": {
+      "expected_hz": 261.626,
+      "measured_hz": 261.706,
+      "error_cents": 0.535,
+      "relative_error_percent": 0.0309
+    },
+    "aliasing": {
+      "f0": 261.6255653005986,
+      "n_harmonics_measured": 91,
+      "n_residual_bins_measured": 15743,
+      "harmonic_rms_db": -35.44,
+      "alias_rms_db": -47.98,
+      "alias_to_harmonic_db": -12.53
+    },
+    "peak": {
+      "peak": 0.987312,
+      "oversampled_peak": 0.987312,
+      "rms": 0.353145,
+      "clipped_samples": 0
+    },
+    "finite": true
+  },
+  "wav": "/workspace/subtractive_synth/output/custom_events.wav"
+}

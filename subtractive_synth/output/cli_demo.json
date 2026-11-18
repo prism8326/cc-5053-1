@@ -1,0 +1,47 @@
+{
+  "params": {
+    "waveform": "square",
+    "attack": 0.005,
+    "decay": 0.15,
+    "sustain": 0.7,
+    "release": 0.25,
+    "cutoff": 4000.0,
+    "resonance": 0.707,
+    "gain": 0.8,
+    "smooth_time": 0.02,
+    "voices": 8
+  },
+  "sample_rate": 48000.0,
+  "block_size": 256,
+  "render": {
+    "render_seconds": 0.4536,
+    "audio_seconds": 2.8,
+    "realtime_factor": 0.162,
+    "samples": 134400,
+    "peak": 0.9748753830887388
+  },
+  "checks": {
+    "pitch": {
+      "expected_hz": 261.626,
+      "measured_hz": 261.706,
+      "error_cents": 0.534,
+      "relative_error_percent": 0.0308
+    },
+    "aliasing": {
+      "f0": 261.6255653005986,
+      "n_harmonics_measured": 91,
+      "n_residual_bins_measured": 15743,
+      "harmonic_rms_db": -32.93,
+      "alias_rms_db": -42.64,
+      "alias_to_harmonic_db": -9.71
+    },
+    "peak": {
+      "peak": 0.974875,
+      "oversampled_peak": 0.974875,
+      "rms": 0.528759,
+      "clipped_samples": 0
+    },
+    "finite": true
+  },
+  "wav": "/workspace/subtractive_synth/output/cli_demo.wav"
+}

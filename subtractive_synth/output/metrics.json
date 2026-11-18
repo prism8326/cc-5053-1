@@ -1,0 +1,155 @@
+{
+  "sample_rate": 48000.0,
+  "block_size": 256,
+  "sweep": {
+    "pitch_tracking": [
+      {
+        "expected_hz": 580.003,
+        "measured_hz": 579.926,
+        "error_cents": -0.228,
+        "relative_error_percent": 0.0132
+      },
+      {
+        "expected_hz": 1340.008,
+        "measured_hz": 1339.91,
+        "error_cents": -0.126,
+        "relative_error_percent": 0.0073
+      },
+      {
+        "expected_hz": 2100.013,
+        "measured_hz": 2099.891,
+        "error_cents": -0.101,
+        "relative_error_percent": 0.0058
+      },
+      {
+        "expected_hz": 2860.018,
+        "measured_hz": 2859.859,
+        "error_cents": -0.096,
+        "relative_error_percent": 0.0056
+      },
+      {
+        "expected_hz": 3620.024,
+        "measured_hz": 3619.829,
+        "error_cents": -0.093,
+        "relative_error_percent": 0.0054
+      }
+    ],
+    "alias_polyblep_db": -67.37,
+    "alias_naive_db": -52.49,
+    "alias_reduction_db": 14.88,
+    "peak": {
+      "peak": 0.681349,
+      "oversampled_peak": 0.681349,
+      "rms": 0.311032,
+      "clipped_samples": 0
+    }
+  },
+  "repeat_notes": {
+    "render": {
+      "render_seconds": 0.2551,
+      "audio_seconds": 1.31,
+      "realtime_factor": 0.1947,
+      "samples": 62880,
+      "peak": 0.9424584023060893
+    },
+    "detected_bursts": 16,
+    "expected_bursts": 16,
+    "peak": {
+      "peak": 0.942458,
+      "oversampled_peak": 0.942458,
+      "rms": 0.366805,
+      "clipped_samples": 0
+    }
+  },
+  "full_polyphony": {
+    "voices_configured": 8,
+    "voices_simultaneously_active": 8,
+    "all_fundamentals_present": true,
+    "fundamentals": {
+      "60": true,
+      "61": true,
+      "62": true,
+      "63": true,
+      "64": true,
+      "65": true,
+      "66": true,
+      "67": true
+    },
+    "peak": {
+      "peak": 0.997052,
+      "oversampled_peak": 0.997052,
+      "rms": 0.476069,
+      "clipped_samples": 0
+    },
+    "render": {
+      "render_seconds": 0.3557,
+      "audio_seconds": 1.8,
+      "realtime_factor": 0.1976,
+      "samples": 86400,
+      "peak": 0.9970515504044095
+    }
+  },
+  "waveform_character": {
+    "saw": {
+      "harmonic_db": {
+        "1": -4.43,
+        "2": -10.84,
+        "3": -13.52,
+        "4": -16.21,
+        "5": -19.29,
+        "6": -19.7,
+        "7": -20.9
+      },
+      "residual_db": -81.04
+    },
+    "square": {
+      "harmonic_db": {
+        "1": 1.59,
+        "2": -126.18,
+        "3": -7.5,
+        "4": -141.88,
+        "5": -13.27,
+        "6": -140.2,
+        "7": -14.88
+      },
+      "residual_db": -77.54
+    },
+    "triangle": {
+      "harmonic_db": {
+        "1": -2.43,
+        "2": -130.37,
+        "3": -20.96,
+        "4": -164.44,
+        "5": -31.16,
+        "6": -157.21,
+        "7": -35.69
+      },
+      "residual_db": -86.06
+    }
+  },
+  "realtime": {
+    "backend": "mock",
+    "timing": {
+      "blocks": 32,
+      "deadline_ms": 5.333,
+      "mean_ms": 0.4391,
+      "p95_ms": 0.5931,
+      "max_ms": 0.6114,
+      "cpu_percent_of_deadline": 8.23,
+      "overruns": 0
+    },
+    "offline_render": {
+      "render_seconds": 0.014,
+      "audio_seconds": 0.1707,
+      "realtime_factor": 0.0822,
+      "samples": 8192,
+      "peak": 0.8396829219977885
+    },
+    "parity": {
+      "max_abs_diff": 0.0,
+      "rms_diff": 0.0,
+      "bit_exact_within_1e-12": true
+    }
+  },
+  "total_wallclock_seconds": 1.118
+}
