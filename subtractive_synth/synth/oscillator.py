@@ -78,7 +78,22 @@ def _polyblep_at_half(phase: np.ndarray, dt: np.ndarray) -> np.ndarray:
 
 
 def polyblep_saw(phase: np.ndarray, dt: np.ndarray) -> np.ndarray:
-    return naive_saw(phase) - _polyblep(phase, dt)
+    # Written in-place rather than ``naive_saw - _polyblep(...)`` so the two
+    # temporary arrays (zeros_like + naive result) disappear.  The arithmetic
+    # at every touched sample is the same subtraction, so output is identical.
+    out = 2.0 * phase - 1.0
+    dt = np.maximum(dt, 1e-12)
+
+    left = phase < dt
+    if np.any(left):
+        x = phase[left] / dt[left]
+        out[left] -= 2.0 * x - x * x - 1.0
+
+    right = phase > 1.0 - dt
+    if np.any(right):
+        x = (phase[right] - 1.0) / dt[right]
+        out[right] -= x * x + 2.0 * x + 1.0
+    return out
 
 
 def polyblep_square(phase: np.ndarray, dt: np.ndarray) -> np.ndarray:
@@ -86,7 +101,29 @@ def polyblep_square(phase: np.ndarray, dt: np.ndarray) -> np.ndarray:
     # jump at phase 0 needs the subtractive BLEP (same as the saw), while the
     # +1 -> -1 jump at phase 0.5 needs the additive one.  Any other sign
     # combination doubles the signal level or leaves the folded residual.
-    return naive_square(phase) - _polyblep(phase, dt) + _polyblep_at_half(phase, dt)
+    out = np.where(phase < 0.5, -1.0, 1.0)
+    dt = np.maximum(dt, 1e-12)
+
+    left = phase < dt
+    if np.any(left):
+        x = phase[left] / dt[left]
+        out[left] -= 2.0 * x - x * x - 1.0
+
+    right = phase > 1.0 - dt
+    if np.any(right):
+        x = (phase[right] - 1.0) / dt[right]
+        out[right] -= x * x + 2.0 * x + 1.0
+
+    left_h = (phase >= 0.5) & (phase < 0.5 + dt)
+    if np.any(left_h):
+        x = (phase[left_h] - 0.5) / dt[left_h]
+        out[left_h] += 2.0 * x - x * x - 1.0
+
+    right_h = (phase >= 0.5 - dt) & (phase < 0.5)
+    if np.any(right_h):
+        x = (phase[right_h] - 0.5) / dt[right_h]
+        out[right_h] += x * x + 2.0 * x + 1.0
+    return out
 
 
 # Leak corner for the triangle integrator: far below any playable note, it only
@@ -118,14 +155,23 @@ class Oscillator:
         # Wrap after every step, exactly like the scalar path: a single cumsum
         # followed by one wrap would accumulate phase rounding error and land
         # on the other side of a discontinuity at wrap samples.
-        phase = np.empty_like(dt)
+        #
+        # The recurrence runs on Python floats (``tolist``) rather than numpy
+        # scalars: the arithmetic is the identical IEEE-754 sequence, but
+        # avoiding a numpy scalar per add/wrap is ~3x faster.  ``dt`` is clipped
+        # to [0, 0.5] and phase stays in [0, 1), so at most one wrap can occur
+        # per step; the single conditional subtraction is exactly
+        # ``ph -= floor(ph)`` here, and it preserves wrap-after-every-step.
+        steps = dt.tolist()
+        phase = [0.0] * len(steps)
         ph = self.phase
-        for i, step_dt in enumerate(dt):
+        for i, step_dt in enumerate(steps):
             ph += step_dt
-            ph -= np.floor(ph)
+            if ph >= 1.0:
+                ph -= 1.0
             phase[i] = ph
-        self.phase = float(ph)
-        return phase, dt
+        self.phase = ph
+        return np.asarray(phase), dt
 
     def render(self, f0: np.ndarray) -> np.ndarray:
         """Render one block; ``f0`` is a per-sample frequency array in Hz."""

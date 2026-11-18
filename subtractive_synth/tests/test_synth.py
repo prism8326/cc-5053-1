@@ -410,3 +410,101 @@ def test_full_polyphony_under_max_voice_load():
     active = [v for v in engine.voices if v.note is not None and not v.idle]
     assert len(active) == 4
     assert np.all(np.isfinite(y)) and np.max(np.abs(y)) <= 1.0
+
+
+
+# --------------------------------------------------------------------------- #
+# 6. Note termination and voice reuse correctness
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("release", [0.0, 0.01, 0.2])
+def test_release_reaches_idle_and_frees_the_voice(release):
+    # Regression: a multiplicative fade never reaches zero, so the voice would
+    # sit in RELEASE forever and never be reclaimed.  The linear increment must
+    # reach exactly zero and return the slot to the pool.
+    params = SynthParams(voices=1, release=release)
+    engine = SynthEngine(params, SR, 256)
+    ev_on = [NoteEvent(0.0, 60, 0.9, "on")]
+    ev_off = [NoteEvent(0.0, 60, 0.0, "off")]
+    engine.process_block(256, ev_on)            # reserve + start attack
+    engine.process_block(int(0.3 * SR))         # reach sustain
+    engine.process_block(256, ev_off)           # enter release
+    engine.process_block(int(release * SR) + 512)  # render the whole fade
+    v = engine.voices[0]
+    assert v.env.state == 0, f"voice stuck in state {v.env.state}"
+    assert v.env.level == 0.0
+    assert v.note is None and 60 not in engine._note_map
+
+    # The freed slot must be reusable immediately and start from zero phase.
+    engine.process_block(256, [NoteEvent(0.0, 64, 1.0, "on")])
+    y = engine.process_block(256)
+    assert np.all(np.isfinite(y))
+    assert engine.voices[0].note == 64
+
+
+def test_release_duration_matches_seconds():
+    for rel in (0.05, 0.2):
+        env = ADSR(0.001, 0.01, 0.8, rel, SR)
+        env.note_on(1.0)
+        env.render(int(0.05 * SR))          # reach sustain
+        env.note_off()
+        steps = 0
+        while env.state != 0 and steps < int(2 * rel * SR) + 1000:
+            env.render_step()
+            steps += 1
+        assert env.state == 0
+        assert abs(steps - round(rel * SR)) <= 2
+
+
+def test_voice_reuse_after_release_is_correct():
+    # Reusing a completed slot must reset oscillator phase, envelope and filter
+    # state rather than carrying the old note's tail.
+    params = SynthParams(voices=1, release=0.02, cutoff=8000.0)
+    engine = SynthEngine(params, SR, 256)
+    engine.process_block(int(0.1 * SR), [NoteEvent(0.0, 72, 1.0, "on")])
+    engine.process_block(256, [NoteEvent(0.0, 72, 0.0, "off")])
+    engine.process_block(int(0.1 * SR))
+    assert engine.voices[0].note is None
+    engine.process_block(256, [NoteEvent(0.0, 48, 1.0, "on")])
+    v = engine.voices[0]
+    # Reused slot is fully fresh: no old note, filter delay lines zeroed, and
+    # the oscillator phase resets so the new note starts its own period.
+    assert v.note == 48
+    first = engine.process_block(256)
+    assert v.env.level > 0.0
+    # Phase advanced at the new note's frequency, not the old note's.
+    assert v.osc.phase == pytest.approx(
+        (midi_to_freq(48) / SR * 512) % 1.0, abs=1e-9)
+    assert np.all(np.isfinite(first))
+
+
+# --------------------------------------------------------------------------- #
+# 7. Playable controls drive the kernel (not just a params copy)
+# --------------------------------------------------------------------------- #
+def test_keyboard_controls_reach_voice_state():
+    import keyboard as kb
+
+    params = SynthParams()
+    engine = SynthEngine(params, SR, 256)
+    kb._set_waveform(engine, params, "triangle")
+    kb._set_cutoff(engine, params, 1200.0)
+    kb._set_resonance(engine, params, 3.0)
+    kb._set_release(engine, params, 0.4)
+    for v in engine.voices:
+        assert v.osc.waveform == "triangle"
+        assert v.filt.cutoff == 1200.0
+        assert v.filt.resonance == 3.0
+        assert v.env.release == 0.4
+
+    # And the kernel actually renders the new cutoff: a low cutoff removes the
+    # high harmonics, so broadband energy drops while the fundamental survives.
+    def hf_energy(cutoff):
+        eng = SynthEngine(SynthParams(cutoff=cutoff), SR, 256)
+        kb._set_cutoff(eng, eng.params, cutoff)
+        eng.process_block(256, [NoteEvent(0.0, 69, 1.0, "on")])
+        y = eng.process_block(int(0.4 * SR))
+        fr, mag, _ = np.fft.rfftfreq(y.size, 1 / SR), None, None
+        spec = np.abs(np.fft.rfft(y))
+        high = spec[np.fft.rfftfreq(y.size, 1 / SR) > 4000].sum()
+        return high
+
+    assert hf_energy(8000.0) > 3 * hf_energy(300.0)

@@ -1,0 +1,299 @@
+{
+  "dense_chord_8": {
+    "voices_configured": 8,
+    "notes": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "waveform": "saw",
+    "params": {
+      "waveform": "saw",
+      "attack": 0.005,
+      "decay": 0.12,
+      "sustain": 0.7,
+      "release": 0.35,
+      "cutoff": 6000.0,
+      "resonance": 0.9,
+      "gain": 0.8,
+      "smooth_time": 0.02,
+      "voices": 8
+    },
+    "active_after_note_off": 8,
+    "peak": {
+      "peak": 0.991822,
+      "oversampled_peak": 0.991822,
+      "rms": 0.482512,
+      "clipped_samples": 0
+    },
+    "per_block_ms": {
+      "blocks": 282,
+      "mean": 0.9178,
+      "p95": 1.1624,
+      "max": 1.296,
+      "deadline": 5.333,
+      "mean_pct_deadline": 17.21
+    },
+    "spectrum_peak_db": -13.61,
+    "isolated_alias": {
+      "f0": 130.8127826502993,
+      "n_harmonics_measured": 183,
+      "n_residual_bins_measured": 10715,
+      "harmonic_rms_db": -34.08,
+      "alias_rms_db": -41.81,
+      "alias_to_harmonic_db": -7.74
+    },
+    "all_fundamentals_present": true,
+    "fundamentals": {
+      "48": true,
+      "49": true,
+      "50": true,
+      "51": true,
+      "52": true,
+      "53": true,
+      "54": true,
+      "55": true
+    }
+  },
+  "dense_chord_16": {
+    "voices_configured": 16,
+    "notes": [
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "waveform": "saw",
+    "params": {
+      "waveform": "saw",
+      "attack": 0.005,
+      "decay": 0.12,
+      "sustain": 0.7,
+      "release": 0.35,
+      "cutoff": 6000.0,
+      "resonance": 0.9,
+      "gain": 0.8,
+      "smooth_time": 0.02,
+      "voices": 16
+    },
+    "active_after_note_off": 16,
+    "peak": {
+      "peak": 0.999768,
+      "oversampled_peak": 0.999768,
+      "rms": 0.607412,
+      "clipped_samples": 0
+    },
+    "per_block_ms": {
+      "blocks": 282,
+      "mean": 1.9122,
+      "p95": 2.372,
+      "max": 2.5282,
+      "deadline": 5.333,
+      "mean_pct_deadline": 35.85
+    },
+    "spectrum_peak_db": -12.32,
+    "isolated_alias": {
+      "f0": 130.8127826502993,
+      "n_harmonics_measured": 183,
+      "n_residual_bins_measured": 10715,
+      "harmonic_rms_db": -32.05,
+      "alias_rms_db": -40.06,
+      "alias_to_harmonic_db": -8.02
+    },
+    "all_fundamentals_present": true,
+    "fundamentals": {
+      "48": true,
+      "49": true,
+      "50": true,
+      "51": true,
+      "52": true,
+      "53": true,
+      "54": true,
+      "55": true,
+      "56": true,
+      "57": true,
+      "58": true,
+      "59": true,
+      "60": true,
+      "61": true,
+      "62": true,
+      "63": true
+    }
+  },
+  "high_register_8": {
+    "voices_configured": 8,
+    "notes": [
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91
+    ],
+    "waveform": "saw",
+    "params": {
+      "waveform": "saw",
+      "attack": 0.005,
+      "decay": 0.12,
+      "sustain": 0.7,
+      "release": 0.35,
+      "cutoff": 6000.0,
+      "resonance": 0.9,
+      "gain": 0.8,
+      "smooth_time": 0.02,
+      "voices": 8
+    },
+    "active_after_note_off": 8,
+    "peak": {
+      "peak": 0.997403,
+      "oversampled_peak": 0.997403,
+      "rms": 0.476418,
+      "clipped_samples": 0
+    },
+    "per_block_ms": {
+      "blocks": 282,
+      "mean": 0.9523,
+      "p95": 1.1775,
+      "max": 1.7042,
+      "deadline": 5.333,
+      "mean_pct_deadline": 17.86
+    },
+    "spectrum_peak_db": -13.3,
+    "isolated_alias": {
+      "f0": 1046.5022612023945,
+      "n_harmonics_measured": 22,
+      "n_residual_bins_measured": 11842,
+      "harmonic_rms_db": -25.6,
+      "alias_rms_db": -42.22,
+      "alias_to_harmonic_db": -16.62
+    },
+    "all_fundamentals_present": true,
+    "fundamentals": {
+      "84": true,
+      "85": true,
+      "86": true,
+      "87": true,
+      "88": true,
+      "89": true,
+      "90": true,
+      "91": true
+    }
+  },
+  "high_register_16": {
+    "voices_configured": 16,
+    "notes": [
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "waveform": "saw",
+    "params": {
+      "waveform": "saw",
+      "attack": 0.005,
+      "decay": 0.12,
+      "sustain": 0.7,
+      "release": 0.35,
+      "cutoff": 6000.0,
+      "resonance": 0.9,
+      "gain": 0.8,
+      "smooth_time": 0.02,
+      "voices": 16
+    },
+    "active_after_note_off": 16,
+    "peak": {
+      "peak": 0.99996,
+      "oversampled_peak": 0.99996,
+      "rms": 0.598226,
+      "clipped_samples": 5
+    },
+    "per_block_ms": {
+      "blocks": 282,
+      "mean": 1.8597,
+      "p95": 2.3747,
+      "max": 3.9199,
+      "deadline": 5.333,
+      "mean_pct_deadline": 34.87
+    },
+    "spectrum_peak_db": -12.23,
+    "isolated_alias": {
+      "f0": 1046.5022612023945,
+      "n_harmonics_measured": 22,
+      "n_residual_bins_measured": 11842,
+      "harmonic_rms_db": -23.5,
+      "alias_rms_db": -40.24,
+      "alias_to_harmonic_db": -16.74
+    },
+    "all_fundamentals_present": true,
+    "fundamentals": {
+      "84": true,
+      "85": true,
+      "86": true,
+      "87": true,
+      "88": true,
+      "89": true,
+      "90": true,
+      "91": true,
+      "92": true,
+      "93": true,
+      "94": true,
+      "95": true,
+      "96": true,
+      "97": true,
+      "98": true,
+      "99": true
+    }
+  },
+  "single_note_B7": {
+    "f0": 3951.066410048992,
+    "alias": {
+      "f0": 3951.066410048992,
+      "n_harmonics_measured": 6,
+      "n_residual_bins_measured": 16338,
+      "harmonic_rms_db": -11.12,
+      "alias_rms_db": -70.46,
+      "alias_to_harmonic_db": -59.34
+    },
+    "peak": {
+      "peak": 0.842148,
+      "oversampled_peak": 0.842148,
+      "rms": 0.510902,
+      "clipped_samples": 0
+    }
+  },
+  "_provenance": {
+    "synth_module": "/tmp/base_repo/subtractive_synth/synth/__init__.py",
+    "python": "3.11.2"
+  }
+}

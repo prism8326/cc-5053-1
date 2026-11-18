@@ -28,7 +28,11 @@ class BiquadLowpass:
         self._z2 = 0.0
         self.b = np.ones(3)
         self.a = np.array([1.0, 0.0, 0.0])
+        self._last_cutoff = float("nan")
+        self._last_res = float("nan")
         self._coeff_for(self._cutoff_sm, self._res_sm)
+        self._last_cutoff = self._cutoff_sm
+        self._last_res = self._res_sm
 
     def set_params(self, cutoff: float | None = None,
                    resonance: float | None = None,
@@ -45,6 +49,8 @@ class BiquadLowpass:
         self._cutoff_sm = self.cutoff
         self._res_sm = self.resonance
         self._coeff_for(self._cutoff_sm, self._res_sm)
+        self._last_cutoff = self._cutoff_sm
+        self._last_res = self._res_sm
 
     def _coeff_for(self, f0: float, q: float) -> None:
         f0 = float(np.clip(f0, 1.0, self.sr * 0.499))
@@ -67,7 +73,14 @@ class BiquadLowpass:
             alpha = 1.0
         self._cutoff_sm += alpha * (self.cutoff - self._cutoff_sm)
         self._res_sm += alpha * (self.resonance - self._res_sm)
-        self._coeff_for(self._cutoff_sm, self._res_sm)
+        # Skip the transcendental coefficient build when the smoothed cutoff
+        # and Q are bit-for-bit unchanged (e.g. smooth_time == 0, or a held
+        # note whose smoother has underflowed to its target).  Reusing the
+        # previous b/a is exactly equivalent because nothing changed.
+        if self._cutoff_sm != self._last_cutoff or self._res_sm != self._last_res:
+            self._coeff_for(self._cutoff_sm, self._res_sm)
+            self._last_cutoff = self._cutoff_sm
+            self._last_res = self._res_sm
 
     def process(self, x: np.ndarray) -> np.ndarray:
         """Vector path for one block; preserves delay-line state."""

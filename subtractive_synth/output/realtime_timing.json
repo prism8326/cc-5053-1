@@ -3,18 +3,18 @@
   "timing": {
     "blocks": 32,
     "deadline_ms": 5.333,
-    "mean_ms": 0.4391,
-    "p95_ms": 0.5931,
-    "max_ms": 0.6114,
-    "cpu_percent_of_deadline": 8.23,
+    "mean_ms": 0.3299,
+    "p95_ms": 0.544,
+    "max_ms": 4.693,
+    "cpu_percent_of_deadline": 6.19,
     "overruns": 0
   },
   "offline_render": {
-    "render_seconds": 0.014,
+    "render_seconds": 0.0051,
     "audio_seconds": 0.1707,
-    "realtime_factor": 0.0822,
+    "realtime_factor": 0.0297,
     "samples": 8192,
-    "peak": 0.8396829219977885
+    "peak": 0.8384623284763408
   },
   "parity": {
     "max_abs_diff": 0.0,

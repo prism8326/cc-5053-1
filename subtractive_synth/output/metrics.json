@@ -46,18 +46,18 @@
   },
   "repeat_notes": {
     "render": {
-      "render_seconds": 0.2551,
+      "render_seconds": 0.0152,
       "audio_seconds": 1.31,
-      "realtime_factor": 0.1947,
+      "realtime_factor": 0.0116,
       "samples": 62880,
-      "peak": 0.9424584023060893
+      "peak": 0.7708427882811767
     },
     "detected_bursts": 16,
     "expected_bursts": 16,
     "peak": {
-      "peak": 0.942458,
-      "oversampled_peak": 0.942458,
-      "rms": 0.366805,
+      "peak": 0.770843,
+      "oversampled_peak": 0.770843,
+      "rms": 0.313893,
       "clipped_samples": 0
     }
   },
@@ -78,13 +78,13 @@
     "peak": {
       "peak": 0.997052,
       "oversampled_peak": 0.997052,
-      "rms": 0.476069,
+      "rms": 0.465909,
       "clipped_samples": 0
     },
     "render": {
-      "render_seconds": 0.3557,
+      "render_seconds": 0.0881,
       "audio_seconds": 1.8,
-      "realtime_factor": 0.1976,
+      "realtime_factor": 0.049,
       "samples": 86400,
       "peak": 0.9970515504044095
     }
@@ -132,18 +132,18 @@
     "timing": {
       "blocks": 32,
       "deadline_ms": 5.333,
-      "mean_ms": 0.4391,
-      "p95_ms": 0.5931,
-      "max_ms": 0.6114,
-      "cpu_percent_of_deadline": 8.23,
+      "mean_ms": 0.3299,
+      "p95_ms": 0.544,
+      "max_ms": 4.693,
+      "cpu_percent_of_deadline": 6.19,
       "overruns": 0
     },
     "offline_render": {
-      "render_seconds": 0.014,
+      "render_seconds": 0.0051,
       "audio_seconds": 0.1707,
-      "realtime_factor": 0.0822,
+      "realtime_factor": 0.0297,
       "samples": 8192,
-      "peak": 0.8396829219977885
+      "peak": 0.8384623284763408
     },
     "parity": {
       "max_abs_diff": 0.0,
@@ -151,5 +151,5 @@
       "bit_exact_within_1e-12": true
     }
   },
-  "total_wallclock_seconds": 1.118
+  "total_wallclock_seconds": 0.327
 }

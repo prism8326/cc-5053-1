@@ -14,31 +14,31 @@
   "sample_rate": 48000.0,
   "block_size": 256,
   "render": {
-    "render_seconds": 0.4536,
+    "render_seconds": 0.0554,
     "audio_seconds": 2.8,
-    "realtime_factor": 0.162,
+    "realtime_factor": 0.0198,
     "samples": 134400,
-    "peak": 0.9748753830887388
+    "peak": 0.9757725701277046
   },
   "checks": {
     "pitch": {
       "expected_hz": 261.626,
-      "measured_hz": 261.706,
-      "error_cents": 0.534,
-      "relative_error_percent": 0.0308
+      "measured_hz": 261.744,
+      "error_cents": 0.781,
+      "relative_error_percent": 0.0451
     },
     "aliasing": {
       "f0": 261.6255653005986,
       "n_harmonics_measured": 91,
       "n_residual_bins_measured": 15743,
-      "harmonic_rms_db": -32.93,
-      "alias_rms_db": -42.64,
-      "alias_to_harmonic_db": -9.71
+      "harmonic_rms_db": -38.08,
+      "alias_rms_db": -42.52,
+      "alias_to_harmonic_db": -4.44
     },
     "peak": {
-      "peak": 0.974875,
-      "oversampled_peak": 0.974875,
-      "rms": 0.528759,
+      "peak": 0.975773,
+      "oversampled_peak": 0.975773,
+      "rms": 0.515841,
       "clipped_samples": 0
     },
     "finite": true

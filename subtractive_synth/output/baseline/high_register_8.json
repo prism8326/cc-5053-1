@@ -1,0 +1,61 @@
+{
+  "voices_configured": 8,
+  "notes": [
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91
+  ],
+  "waveform": "saw",
+  "params": {
+    "waveform": "saw",
+    "attack": 0.005,
+    "decay": 0.12,
+    "sustain": 0.7,
+    "release": 0.35,
+    "cutoff": 6000.0,
+    "resonance": 0.9,
+    "gain": 0.8,
+    "smooth_time": 0.02,
+    "voices": 8
+  },
+  "active_after_note_off": 8,
+  "peak": {
+    "peak": 0.997403,
+    "oversampled_peak": 0.997403,
+    "rms": 0.476418,
+    "clipped_samples": 0
+  },
+  "per_block_ms": {
+    "blocks": 282,
+    "mean": 0.9523,
+    "p95": 1.1775,
+    "max": 1.7042,
+    "deadline": 5.333,
+    "mean_pct_deadline": 17.86
+  },
+  "spectrum_peak_db": -13.3,
+  "isolated_alias": {
+    "f0": 1046.5022612023945,
+    "n_harmonics_measured": 22,
+    "n_residual_bins_measured": 11842,
+    "harmonic_rms_db": -25.6,
+    "alias_rms_db": -42.22,
+    "alias_to_harmonic_db": -16.62
+  },
+  "all_fundamentals_present": true,
+  "fundamentals": {
+    "84": true,
+    "85": true,
+    "86": true,
+    "87": true,
+    "88": true,
+    "89": true,
+    "90": true,
+    "91": true
+  }
+}

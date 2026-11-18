@@ -1,0 +1,39 @@
+{
+  "voices_configured": 1,
+  "notes": [
+    60
+  ],
+  "reps": 3,
+  "performance_seconds": 2.0,
+  "wallclock_seconds_best": 0.0113,
+  "realtime_factor_best": 0.0057,
+  "per_block_ms": {
+    "blocks": 375,
+    "mean": 0.0301,
+    "p95": 0.0446,
+    "max": 0.0516,
+    "deadline_ms": 5.333,
+    "mean_pct_deadline": 0.56,
+    "overruns": 0
+  },
+  "aliasing": {
+    "f0": 261.6255653005986,
+    "n_harmonics_measured": 91,
+    "n_residual_bins_measured": 11359,
+    "harmonic_rms_db": -28.99,
+    "alias_rms_db": -93.52,
+    "alias_to_harmonic_db": -64.53
+  },
+  "peak": {
+    "peak": 0.656112,
+    "oversampled_peak": 0.656112,
+    "rms": 0.246655,
+    "clipped_samples": 0
+  },
+  "finite": true,
+  "all_fundamentals_present": true,
+  "fundamentals": {
+    "60": true
+  },
+  "soft_saturated_samples": 0
+}

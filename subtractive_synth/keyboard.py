@@ -117,28 +117,25 @@ def run_terminal(out_dir: str, sr: float = SAMPLE_RATE) -> None:
                     pressed.clear()
                     print("\rall notes released      ", end="", flush=True)
                 elif ch == "1":
-                    params.waveform = "saw"
-                    _refresh_voices(engine, params)
+                    _set_waveform(engine, params, "saw")
                     print("\rwaveform = saw         ", end="", flush=True)
                 elif ch == "2":
-                    params.waveform = "square"
-                    _refresh_voices(engine, params)
+                    _set_waveform(engine, params, "square")
                     print("\rwaveform = square      ", end="", flush=True)
                 elif ch == "3":
-                    params.waveform = "triangle"
-                    _refresh_voices(engine, params)
+                    _set_waveform(engine, params, "triangle")
                     print("\rwaveform = triangle    ", end="", flush=True)
                 elif ch == "[":
-                    params.cutoff = max(100.0, params.cutoff * 0.8)
+                    _set_cutoff(engine, params, params.cutoff * 0.8)
                     print(f"\rcutoff = {params.cutoff:.0f} Hz      ", end="", flush=True)
                 elif ch == "]":
-                    params.cutoff = min(sr / 2.1, params.cutoff * 1.25)
+                    _set_cutoff(engine, params, params.cutoff * 1.25)
                     print(f"\rcutoff = {params.cutoff:.0f} Hz      ", end="", flush=True)
                 elif ch == "-":
-                    params.resonance = max(0.1, params.resonance * 0.85)
+                    _set_resonance(engine, params, params.resonance * 0.85)
                     print(f"\rQ = {params.resonance:.2f}            ", end="", flush=True)
                 elif ch == "=":
-                    params.resonance = min(12.0, params.resonance * 1.18)
+                    _set_resonance(engine, params, params.resonance * 1.18)
                     print(f"\rQ = {params.resonance:.2f}            ", end="", flush=True)
                 elif ch == ",":
                     pass  # comma is also a note key; commands avoid overlap
@@ -149,9 +146,42 @@ def run_terminal(out_dir: str, sr: float = SAMPLE_RATE) -> None:
         print("\nSession ended. " + backend.timing_report().__repr__())
 
 
-def _refresh_voices(engine: SynthEngine, params: SynthParams) -> None:
+# ---------------------------------------------------------------------- #
+# Parameter pushes: write both the shared params object *and* every voice's
+# own DSP state.  The voices never read ``params`` after construction, so a
+# control that only updated ``params`` would look right in the status line
+# while the kernel kept rendering the old value.
+# ---------------------------------------------------------------------- #
+def _set_waveform(engine: SynthEngine, params: SynthParams, waveform: str) -> None:
+    params.waveform = waveform
+    params.validate(engine.sr)
     for v in engine.voices:
-        v.osc.waveform = params.waveform
+        v.osc.waveform = waveform
+
+
+def _set_cutoff(engine: SynthEngine, params: SynthParams, cutoff_hz: float) -> None:
+    cutoff_hz = float(min(max(cutoff_hz, 1.0), engine.sr * 0.499))
+    params.cutoff = cutoff_hz
+    for v in engine.voices:
+        v.filt.set_params(cutoff=cutoff_hz)
+
+
+def _set_resonance(engine: SynthEngine, params: SynthParams, q: float) -> None:
+    q = float(min(max(q, 1e-4), 40.0))
+    params.resonance = q
+    for v in engine.voices:
+        v.filt.set_params(resonance=q)
+
+
+def _set_release(engine: SynthEngine, params: SynthParams, seconds: float) -> None:
+    seconds = max(float(seconds), 0.0)
+    params.release = seconds
+    for v in engine.voices:
+        v.env.set_times(release=seconds)
+
+
+def _refresh_voices(engine: SynthEngine, params: SynthParams) -> None:
+    _set_waveform(engine, params, params.waveform)
 
 
 def _status(engine, params, backend) -> str:
@@ -177,6 +207,8 @@ def run_gui(out_dir: str, sr: float = SAMPLE_RATE) -> None:
     root = tk.Tk()
     root.title("Subtractive Synth")
     scope = np.zeros(BLOCK_SIZE * 4)
+    spec_bins = BLOCK_SIZE // 2 + 1
+    spec_freqs = np.fft.rfftfreq(BLOCK_SIZE, 1.0 / sr)
 
     fig = Figure(figsize=(7, 3.2))
     ax_wave = fig.add_subplot(2, 1, 1)
@@ -184,35 +216,79 @@ def run_gui(out_dir: str, sr: float = SAMPLE_RATE) -> None:
     line, = ax_wave.plot(scope, lw=0.7)
     ax_wave.set_ylim(-1, 1)
     ax_wave.set_title("waveform")
-    spec_line, = ax_spec.plot(np.zeros(512), lw=0.7)
+    spec_line, = ax_spec.plot(spec_freqs, np.full(spec_bins, -100.0), lw=0.7)
     ax_spec.set_title("spectrum (dB)")
     ax_spec.set_ylim(-100, 5)
+    ax_spec.set_xlim(0, sr / 2)
+    ax_spec.set_xlabel("Hz")
     canvas = FigureCanvasTkAgg(fig, master=root)
     canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     panel = tk.Frame(root)
     panel.pack(side=tk.BOTTOM, fill=tk.X)
 
+    # Every failure is reported back here *and* printed: the control panel is
+    # part of the keyboard, so a kernel exception must be visible next to the
+    # key that caused it instead of silently killing the update loop.
+    status = tk.StringVar(value="ready")
+    status_label = tk.Label(root, textvariable=status, anchor="w",
+                            fg="#0a0", bg="#111", font=("TkFixedFont", 9))
+    status_label.pack(side=tk.BOTTOM, fill=tk.X)
+
+    failures: list[str] = []
+
+    def report(kind: str, ok: bool = True) -> None:
+        if ok:
+            status.set(f"{kind}  |  wave={params.waveform} "
+                       f"cutoff={params.cutoff:.0f}Hz Q={params.resonance:.2f} "
+                       f"release={params.release:.3f}s gain={params.gain:.2f}")
+        else:
+            status_label.configure(fg="#f33")
+            failures.append(kind)
+            print(f"[keyboard] {kind}")
+
+    def guard(fn):
+        def wrapped(*args, **kwargs):
+            try:
+                fn(*args, **kwargs)
+            except Exception as exc:  # noqa: BLE001
+                report(f"{type(exc).__name__}: {exc}", ok=False)
+        return wrapped
+
     wave_var = tk.StringVar(value=params.waveform)
+
+    @guard
+    def on_wave():
+        _set_waveform(engine, params, wave_var.get())
+        report("waveform")
+
     for i, w in enumerate(("saw", "square", "triangle")):
         tk.Radiobutton(panel, text=w, value=w, variable=wave_var,
-                       command=lambda: _refresh_voices(engine, params)).grid(
-            row=0, column=i, padx=4)
+                       command=on_wave).grid(row=0, column=i, padx=4)
 
     def add_scale(label, key, lo, hi, row, log=False):
         var = tk.DoubleVar(value=getattr(params, key))
 
-        def on_change(val):
+        @guard
+        def on_change(val, key=key, lo=lo, hi=hi, log=log):
             val = float(val)
             if log:
                 val = lo * (hi / lo) ** val
-            setattr(params, key, val)
+            if key == "cutoff":
+                _set_cutoff(engine, params, val)
+            elif key == "resonance":
+                _set_resonance(engine, params, val)
+            elif key == "release":
+                _set_release(engine, params, val)
+            report(key)
+
         sc = tk.Scale(panel, label=label, from_=0, to=1, resolution=0.001,
-                      orient=tk.HORIZONTAL, length=160,
+                      orient=tk.HORIZONTAL, length=160, variable=var,
                       command=on_change)
         sc.set((np.log(getattr(params, key) / lo) / np.log(hi / lo)) if log
                else getattr(params, key))
         sc.grid(row=row, column=4, padx=4)
+        return sc
 
     add_scale("cutoff", "cutoff", 100, sr / 2.1, 0, log=True)
     add_scale("Q", "resonance", 0.1, 12, 1)
@@ -220,39 +296,75 @@ def run_gui(out_dir: str, sr: float = SAMPLE_RATE) -> None:
 
     held = set()
 
+    @guard
     def press(note):
         if note not in held:
             held.add(note)
             engine.note_on(note, 0.9)
+            report(f"on {note_name(note)}")
 
+    @guard
     def release(note):
         held.discard(note)
         engine.note_off(note)
+        report(f"off {note_name(note)}")
 
     keys_frame = tk.Frame(root)
     keys_frame.pack(fill=tk.X)
     for i, note in enumerate(range(60, 73)):
         btn = tk.Button(keys_frame, text=note_name(note), width=4, height=3,
-                        bg="#222" if "#" in note_name(note) else "#eee")
+                        bg="#222" if "#" in note_name(note) else "#eee",
+                        fg="#eee" if "#" in note_name(note) else "#000")
         btn.grid(row=0, column=i, padx=1)
-        btn.bind("<ButtonPress>", lambda e, n=note: press(n))
-        btn.bind("<ButtonRelease>", lambda e, n=note: release(n))
+        btn.bind("<ButtonPress-1>", lambda e, n=note: press(n))
+        btn.bind("<ButtonRelease-1>", lambda e, n=note: release(n))
+
+    recorded: list[np.ndarray] = []
+
+    @guard
+    def save_perf():
+        if not recorded:
+            raise RuntimeError("nothing recorded yet")
+        audio = np.concatenate(recorded)
+        path = os.path.join(out_dir, "gui_performance.wav")
+        save_wav(path, audio, sr)
+        recorded.clear()
+        report(f"saved {os.path.basename(path)} ({audio.size / sr:.2f}s)")
+
+    tk.Button(panel, text="save wav", command=save_perf).grid(row=2, column=0)
+    tk.Button(panel, text="release all",
+              command=guard(lambda: [release(n) for n in list(held)])).grid(
+        row=2, column=1)
 
     def tick():
-        block = backend.pull()
+        try:
+            block = backend.pull()
+        except Exception as exc:  # noqa: BLE001
+            report(f"pull: {type(exc).__name__}: {exc}", ok=False)
+            root.after(50, tick)
+            return
+        if isinstance(backend, MockAudioBackend):
+            recorded.append(block.copy())
         scope[:-BLOCK_SIZE] = scope[BLOCK_SIZE:]
         scope[-BLOCK_SIZE:] = block
         line.set_ydata(scope)
-        sp = 20 * np.log10(np.abs(np.fft.rfft(block * np.hanning(block.size))) + 1e-9)
-        spec_line.set_ydata(sp[:512])
-        spec_line.set_xdata(np.arange(512))
-        ax_spec.set_xlim(0, 512)
+        sp = 20 * np.log10(np.abs(np.fft.rfft(block * np.hanning(block.size)))
+                           + 1e-9)
+        spec_line.set_ydata(sp)
         canvas.draw_idle()
         root.after(20, tick)
 
     root.after(20, tick)
-    root.protocol("WM_DELETE_WINDOW", lambda: (backend.stop(), root.destroy()))
-    root.mainloop()
+    root.protocol("WM_DELETE_WINDOW",
+                  lambda: (backend.stop(), root.destroy()))
+    try:
+        root.mainloop()
+    finally:
+        backend.stop()
+        print(f"[keyboard] backend={backend.name} "
+              f"timing={backend.timing_report()}")
+        if failures:
+            print(f"[keyboard] {len(failures)} control failure(s): {failures}")
 
 
 def main() -> None:

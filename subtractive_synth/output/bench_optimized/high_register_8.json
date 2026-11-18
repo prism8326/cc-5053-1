@@ -1,0 +1,53 @@
+{
+  "voices_configured": 8,
+  "notes": [
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91
+  ],
+  "reps": 3,
+  "performance_seconds": 2.0,
+  "wallclock_seconds_best": 0.0873,
+  "realtime_factor_best": 0.0436,
+  "per_block_ms": {
+    "blocks": 375,
+    "mean": 0.2355,
+    "p95": 0.3561,
+    "max": 0.559,
+    "deadline_ms": 5.333,
+    "mean_pct_deadline": 4.42,
+    "overruns": 0
+  },
+  "aliasing": {
+    "f0": 1046.5022612023945,
+    "n_harmonics_measured": 22,
+    "n_residual_bins_measured": 11842,
+    "harmonic_rms_db": -25.6,
+    "alias_rms_db": -42.22,
+    "alias_to_harmonic_db": -16.62
+  },
+  "peak": {
+    "peak": 0.997403,
+    "oversampled_peak": 0.997403,
+    "rms": 0.517844,
+    "clipped_samples": 0
+  },
+  "finite": true,
+  "all_fundamentals_present": true,
+  "fundamentals": {
+    "84": true,
+    "85": true,
+    "86": true,
+    "87": true,
+    "88": true,
+    "89": true,
+    "90": true,
+    "91": true
+  },
+  "soft_saturated_samples": 0
+}

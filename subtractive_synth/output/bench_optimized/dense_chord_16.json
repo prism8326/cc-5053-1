@@ -1,0 +1,69 @@
+{
+  "voices_configured": 16,
+  "notes": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "reps": 3,
+  "performance_seconds": 2.0,
+  "wallclock_seconds_best": 0.1768,
+  "realtime_factor_best": 0.0884,
+  "per_block_ms": {
+    "blocks": 375,
+    "mean": 0.6321,
+    "p95": 0.9914,
+    "max": 13.9618,
+    "deadline_ms": 5.333,
+    "mean_pct_deadline": 11.85,
+    "overruns": 3
+  },
+  "aliasing": {
+    "f0": 130.8127826502993,
+    "n_harmonics_measured": 183,
+    "n_residual_bins_measured": 10715,
+    "harmonic_rms_db": -32.05,
+    "alias_rms_db": -40.06,
+    "alias_to_harmonic_db": -8.02
+  },
+  "peak": {
+    "peak": 0.999768,
+    "oversampled_peak": 0.999768,
+    "rms": 0.655663,
+    "clipped_samples": 0
+  },
+  "finite": true,
+  "all_fundamentals_present": true,
+  "fundamentals": {
+    "48": true,
+    "49": true,
+    "50": true,
+    "51": true,
+    "52": true,
+    "53": true,
+    "54": true,
+    "55": true,
+    "56": true,
+    "57": true,
+    "58": true,
+    "59": true,
+    "60": true,
+    "61": true,
+    "62": true,
+    "63": true
+  },
+  "soft_saturated_samples": 0
+}

@@ -72,12 +72,23 @@ class Voice:
             a = 1.0 - np.exp(-n / (p.smooth_time * self.sr))
         else:
             a = 1.0
-        f0 = np.empty(n)
-        sm = self._f0_sm
-        for i in range(n):
-            sm += a * (f0_target[i] - sm)
-            f0[i] = sm
-        self._f0_sm = sm
+        if f0_automation is None and target == self._f0_sm:
+            # A normal held note starts with _f0_sm already equal to its target
+            # (set at trigger).  The recurrence sm += a*(target-sm) then leaves
+            # sm exactly unchanged, so evaluating it per sample only costs time;
+            # the constant result is bit-identical.
+            f0 = np.full(n, target)
+        else:
+            f0 = np.empty(n)
+            sm = self._f0_sm
+            # Python floats: same IEEE-754 sequence as the np.float64 scalar
+            # loop, but no per-sample numpy object overhead.
+            target_seq = f0_target.tolist()
+            a_ = float(a)
+            for i in range(n):
+                sm += a_ * (target_seq[i] - sm)
+                f0[i] = sm
+            self._f0_sm = sm
 
         x = self.osc.render(f0)
         env = self.env.render(n, note_on_at, note_off_at,
